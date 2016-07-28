@@ -1,8 +1,13 @@
 {
   "name": "knex-umzug",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A storage adapter for [umzug](npm.im/umzug), a database migration library.",
-  "keywords": ["umzug", "knex", "migration", "database"],
+  "keywords": [
+    "umzug",
+    "knex",
+    "migration",
+    "database"
+  ],
   "main": "storage.js",
   "scripts": {
     "test": "standard && node test.js"
