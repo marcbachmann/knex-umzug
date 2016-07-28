@@ -17,11 +17,8 @@
   "devDependencies": {
     "knex": "^0.11.9",
     "sqlite3": "^3.1.4",
-    "tape": "^4.5.1",
+    "tape": "^4.6.0",
     "umzug": "^1.11.0"
-  },
-  "dependencies": {
-    "tape": "^4.5.1"
   },
   "repository": {
     "type": "git",
@@ -30,5 +27,6 @@
   "bugs": {
     "url": "https://github.com/marcbachmann/knex-umzug/issues"
   },
-  "homepage": "https://github.com/marcbachmann/knex-umzug#readme"
+  "homepage": "https://github.com/marcbachmann/knex-umzug#readme",
+  "dependencies": {}
 }
