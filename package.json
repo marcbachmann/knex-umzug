@@ -1,7 +1,8 @@
 {
   "name": "knex-umzug",
   "version": "1.0.0",
-  "description": "",
+  "description": "A storage adapter for [umzug](npm.im/umzug), a database migration library.",
+  "keywords": ["umzug", "knex", "migration", "database"],
   "main": "storage.js",
   "scripts": {
     "test": "standard && node test.js"
@@ -13,5 +14,16 @@
     "sqlite3": "^3.1.4",
     "tape": "^4.5.1",
     "umzug": "^1.11.0"
-  }
+  },
+  "dependencies": {
+    "tape": "^4.5.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcbachmann/knex-umzug.git"
+  },
+  "bugs": {
+    "url": "https://github.com/marcbachmann/knex-umzug/issues"
+  },
+  "homepage": "https://github.com/marcbachmann/knex-umzug#readme"
 }
