@@ -19,7 +19,7 @@ var umzug = new Umzug({
       connection: db,
       tableName: 'migrations'
     }
-
+})
 
 umzug.someMethod().then(function (result) {
 
