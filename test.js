@@ -3,23 +3,47 @@ var test = require('tape')
 var Storage = require('./storage')
 var knex = require('knex')
 var dbPath = './test.sqlite'
-require('fs').unlinkSync(dbPath)
 var knexConnection = knex({client: 'sqlite3', connection: {filename: dbPath}, useNullAsDefault: true})
 var storageOpts = {storageOptions: {connection: knexConnection, context: 'foo'}}
+deleteDatabase()
 
 test.onFinish(function () {
   knexConnection.destroy()
+  deleteDatabase()
 })
 
 test('constructor', function (t) {
-  t.plan(1)
+  t.plan(5)
 
   t.test('needs a context and knex connection', function (t) {
-    t.plan(4)
+    t.plan(3)
     t.throws(() => new Storage())
-    t.throws(() => new Storage({storageOptions: {connection: knexConnection}}), /The option 'options.storageOptions.context' is required./)
-    t.throws(() => new Storage({storageOptions: {context: 'foo'}}), /The option 'options.storageOptions.connection' is required./)
+    t.throws(() => new Storage({storageOptions: {context: undefined}}), /The option 'options.storageOptions.connection' is required./)
     t.doesNotThrow(() => new Storage({storageOptions: {context: 'foo', connection: knexConnection}}))
+  })
+
+  t.test('sets a default context', function (t) {
+    t.plan(1)
+    var storage = new Storage({storageOptions: {connection: knexConnection}})
+    t.equal(storage.context, 'default')
+  })
+
+  t.test('allows a custom context', function (t) {
+    t.plan(1)
+    var storage = new Storage({storageOptions: {connection: knexConnection, context: 'foo'}})
+    t.equal(storage.context, 'foo')
+  })
+
+  t.test('sets the tableName to "migrations"', function (t) {
+    t.plan(1)
+    var storage = new Storage({storageOptions: {connection: knexConnection, context: 'foo'}})
+    t.equal(storage.tableName, 'migrations')
+  })
+
+  t.test('allows a custom tableName', function (t) {
+    t.plan(1)
+    var storage = new Storage({storageOptions: {connection: knexConnection, tableName: 'foo'}})
+    t.equal(storage.tableName, 'foo')
   })
 })
 
@@ -133,6 +157,12 @@ test('unlogMigration', function (t) {
     .catch(t.notOk)
   })
 })
+
+function deleteDatabase () {
+  try {
+    require('fs').unlinkSync(dbPath)
+  } catch (err) {}
+}
 
 function logMigration (storage, name) {
   return function () {

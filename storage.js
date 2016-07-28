@@ -1,31 +1,33 @@
 var os = require('os')
 var assert = require('assert')
+function isString (s) { return typeof s === 'string' }
 
 module.exports = KnexStorage
 
 function KnexStorage (options) {
-  this.context = options.storageOptions.context
-  assert(this.context, new Error("The option 'options.storageOptions.context' is required."))
-
+  this.tableName = options.storageOptions.tableName || 'migrations'
+  this.context = options.storageOptions.context || 'default'
   this.knex = options.storageOptions.connection
-  assert(typeof this.knex === 'function', new Error("The option 'options.storageOptions.connection' is required."))
+  assert(isString(this.tableName), "The option 'options.storageOptions.tableName' is required.")
+  assert(isString(this.context), "The option 'options.storageOptions.context' is required.")
+  assert(this.knex, "The option 'options.storageOptions.connection' is required.")
 }
 
 KnexStorage.prototype.logMigration = function (migrationName) {
-  return _event(this, 'up', migrationName)
+  return insertEvent(this, 'up', migrationName)
 }
 
 KnexStorage.prototype.unlogMigration = function (migrationName) {
-  return _event(this, 'down', migrationName)
+  return insertEvent(this, 'down', migrationName)
 }
 
 KnexStorage.prototype.executed = function () {
   var self = this
-  return self.knex('migrations')
+  return self.knex(self.tableName)
     .where('context', self.context)
     .orderBy('time', 'asc')
     .catch(function (err) {
-      if (tableDoesNotExist(err, 'migrations')) return createMigrationTable(self)
+      if (tableDoesNotExist(err, self.tableName)) return createMigrationTable(self)
       throw err
     })
     .then(function (events) {
@@ -33,8 +35,8 @@ KnexStorage.prototype.executed = function () {
     })
 }
 
-function _event (storage, type, name) {
-  return storage.knex('migrations').insert(createEvent(storage.context, type, name))
+function insertEvent (storage, type, name) {
+  return storage.knex(storage.tableName).insert(createEvent(storage.context, type, name))
 }
 
 function createEvent (context, type, name) {
@@ -52,7 +54,7 @@ function createMigrationTable (storage) {
   return storage
     .knex
     .schema
-    .createTable('migrations', function (table) {
+    .createTable(storage.tableName, function (table) {
       table.dateTime('time')
       table.string('context')
       table.string('type')
@@ -81,7 +83,7 @@ function ensureBackwardsCompatibility (storage) {
         evt.time.setMilliseconds(i) // events get ordered by insert date
         return evt
       })
-      return storage.knex('migrations').insert(migrations).return(migrations)
+      return storage.knex(storage.tableName).insert(migrations).return(migrations)
     })
     .catch(function (err) {
       if (tableDoesNotExist(err, 'system')) return []
