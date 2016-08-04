@@ -158,6 +158,38 @@ test('unlogMigration', function (t) {
   })
 })
 
+test('history', function (t) {
+  t.plan(11)
+  var opts = Object.assign({}, storageOpts)
+  opts.storageOptions = Object.assign({}, opts.storageOptions, {context: 'history-test'})
+
+  var storage = new Storage(opts)
+  storage.logMigration('first')
+  .then(logMigration(storage, 'second'))
+  .then(logMigration(storage, 'third'))
+  .then(unlogMigration(storage, 'third'))
+  .then(logMigration(storage, 'fourth'))
+
+  .then(storage.history.bind(storage))
+  .then(function (history) {
+    t.ok(Array.isArray(history), 'history must be an array')
+    t.equals(history[0].name, 'first')
+    t.equals(history[0].type, 'up')
+
+    t.equals(history[1].name, 'second')
+    t.equals(history[1].type, 'up')
+
+    t.equals(history[2].name, 'third')
+    t.equals(history[2].type, 'up')
+
+    t.equals(history[3].name, 'third')
+    t.equals(history[3].type, 'down')
+
+    t.equals(history[4].name, 'fourth')
+    t.equals(history[4].type, 'up')
+  })
+})
+
 function deleteDatabase () {
   try {
     require('fs').unlinkSync(dbPath)

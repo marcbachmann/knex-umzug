@@ -22,6 +22,12 @@ KnexStorage.prototype.unlogMigration = function (migrationName) {
 }
 
 KnexStorage.prototype.executed = function () {
+  return this
+    .history()
+    .then(toMigrationState(this.context))
+}
+
+KnexStorage.prototype.history = function () {
   var self = this
   return self.knex(self.tableName)
     .where('context', self.context)
@@ -29,9 +35,6 @@ KnexStorage.prototype.executed = function () {
     .catch(function (err) {
       if (tableDoesNotExist(err, self.tableName)) return createMigrationTable(self)
       throw err
-    })
-    .then(function (events) {
-      return toMigrationState(self.context, events)
     })
 }
 
@@ -92,17 +95,19 @@ function ensureBackwardsCompatibility (storage) {
   }
 }
 
-function toMigrationState (context, events) {
-  if (!events) events = []
+function toMigrationState (context) {
+  return function (events) {
+    if (!events) events = []
 
-  function reducer (executed, event) {
-    if (event.context !== context) return
-    if (event.type === 'up') executed.push(event)
-    else if (event.type === 'down') executed = executed.filter(function (e) { return e.name !== event.name })
-    return executed
+    function reducer (executed, event) {
+      if (event.context !== context) return
+      if (event.type === 'up') executed.push(event)
+      else if (event.type === 'down') executed = executed.filter(function (e) { return e.name !== event.name })
+      return executed
+    }
+
+    return events.reduce(reducer, []).map(function (e) { return e.name })
   }
-
-  return events.reduce(reducer, []).map(function (e) { return e.name })
 }
 
 function tableDoesNotExist (err, table) {
