@@ -17,7 +17,7 @@
   "devDependencies": {
     "knex": "^0.11.9",
     "sqlite3": "^3.1.4",
-    "standard": "^7.1.2",
+    "standard": "^8.0.0",
     "tape": "^4.6.0",
     "umzug": "^1.11.0"
   },
