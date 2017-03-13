@@ -1,5 +1,7 @@
 # knex-umzug
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/marcbachmann/knex-umzug.svg)](https://greenkeeper.io/)
+
 A storage adapter for umzug, a database migration library.
 
 It supports namespacing and custom database table names.
