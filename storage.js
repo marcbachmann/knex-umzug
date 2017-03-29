@@ -111,7 +111,8 @@ function toMigrationState (context) {
 }
 
 function tableDoesNotExist (err, table) {
-  if (new RegExp(`relation "${table}" does not exist`).test(err.message)) return true
-  else if (new RegExp(`no such table: ${table}`).test(err.message)) return true
+  // relation does not exist
+  if (err.code === '42P01') return true
+  if (new RegExp(`no such table: ${table}`).test(err.message)) return true
   return false
 }
