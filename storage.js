@@ -5,12 +5,12 @@ function isString (s) { return typeof s === 'string' }
 module.exports = KnexStorage
 
 function KnexStorage (options) {
-  this.tableName = options.storageOptions.tableName || 'migrations'
-  this.context = options.storageOptions.context || 'default'
-  this.knex = options.storageOptions.connection
-  assert(isString(this.tableName), "The option 'options.storageOptions.tableName' is required.")
-  assert(isString(this.context), "The option 'options.storageOptions.context' is required.")
-  assert(this.knex, "The option 'options.storageOptions.connection' is required.")
+  this.tableName = options.tableName || 'migrations'
+  this.context = options.context || 'default'
+  this.knex = options.connection
+  assert(isString(this.tableName), "The option 'options.tableName' is required.")
+  assert(isString(this.context), "The option 'options.context' is required.")
+  assert(this.knex, "The option 'options.connection' is required.")
 }
 
 KnexStorage.prototype.logMigration = function (migrationName) {

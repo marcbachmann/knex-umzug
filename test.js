@@ -4,7 +4,7 @@ var Storage = require('./storage')
 var knex = require('knex')
 var dbPath = './test.sqlite'
 var knexConnection = knex({client: 'sqlite3', connection: {filename: dbPath}, useNullAsDefault: true})
-var storageOpts = {storageOptions: {connection: knexConnection, context: 'foo'}}
+var storageOpts = {connection: knexConnection, context: 'foo'}
 deleteDatabase()
 
 test.onFinish(function () {
@@ -18,31 +18,31 @@ test('constructor', function (t) {
   t.test('needs a context and knex connection', function (t) {
     t.plan(3)
     t.throws(() => new Storage())
-    t.throws(() => new Storage({storageOptions: {context: undefined}}), /The option 'options.storageOptions.connection' is required./)
-    t.doesNotThrow(() => new Storage({storageOptions: {context: 'foo', connection: knexConnection}}))
+    t.throws(() => new Storage({context: undefined}), /The option 'options.connection' is required./)
+    t.doesNotThrow(() => new Storage({context: 'foo', connection: knexConnection}))
   })
 
   t.test('sets a default context', function (t) {
     t.plan(1)
-    var storage = new Storage({storageOptions: {connection: knexConnection}})
+    var storage = new Storage({connection: knexConnection})
     t.equal(storage.context, 'default')
   })
 
   t.test('allows a custom context', function (t) {
     t.plan(1)
-    var storage = new Storage({storageOptions: {connection: knexConnection, context: 'foo'}})
+    var storage = new Storage({connection: knexConnection, context: 'foo'})
     t.equal(storage.context, 'foo')
   })
 
   t.test('sets the tableName to "migrations"', function (t) {
     t.plan(1)
-    var storage = new Storage({storageOptions: {connection: knexConnection, context: 'foo'}})
+    var storage = new Storage({connection: knexConnection, context: 'foo'})
     t.equal(storage.tableName, 'migrations')
   })
 
   t.test('allows a custom tableName', function (t) {
     t.plan(1)
-    var storage = new Storage({storageOptions: {connection: knexConnection, tableName: 'foo'}})
+    var storage = new Storage({connection: knexConnection, tableName: 'foo'})
     t.equal(storage.tableName, 'foo')
   })
 })
@@ -160,8 +160,7 @@ test('unlogMigration', function (t) {
 
 test('history', function (t) {
   t.plan(11)
-  var opts = Object.assign({}, storageOpts)
-  opts.storageOptions = Object.assign({}, opts.storageOptions, {context: 'history-test'})
+  const opts = Object.assign({}, storageOpts, {context: 'history-test'})
 
   var storage = new Storage(opts)
   storage.logMigration('first')

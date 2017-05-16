@@ -19,7 +19,10 @@
     "sqlite3": "^3.1.4",
     "standard": "^10.0.0",
     "tape": "^4.6.0",
-    "umzug": "^1.11.0"
+    "umzug": "^2.0.0"
+  },
+  "peerDependencies": {
+    "umzug": ">=2"
   },
   "repository": {
     "type": "git",
