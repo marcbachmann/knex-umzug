@@ -7,6 +7,10 @@ A storage adapter for umzug, a database migration library.
 It supports namespacing and custom database table names.
 This storage adapter not only shows you the current state of a migration but also shows all the migration paths and tracks hostname and system user which executed a migration.
 
+This library only makes `knex` work with `umzug`.
+If you're interested in a CLI, please check out https://github.com/marcbachmann/umzug-cli.
+
+
 ```js
 var Umzug = require('umzug')
 var db = require('knex')({
