@@ -16,7 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "knex": "^0.13.0",
-    "sqlite3": "^3.1.4",
+    "sqlite3": "^4.0.0",
     "standard": "^10.0.0",
     "tape": "^4.6.0",
     "umzug": "^2.0.0"
