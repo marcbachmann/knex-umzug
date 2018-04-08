@@ -10,7 +10,9 @@
   ],
   "main": "storage.js",
   "scripts": {
-    "test": "standard && node test.js"
+    "lint": "standard",
+    "test": "npm run lint -s && node test.js",
+    "test:ci": "node test.js"
   },
   "author": "Marc Bachmann <marc.brookman@gmail.com>",
   "license": "ISC",
