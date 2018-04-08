@@ -17,11 +17,11 @@
   "author": "Marc Bachmann <marc.brookman@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "knex": "^0.13.0",
-    "sqlite3": "^3.1.4",
-    "standard": "^10.0.0",
-    "tape": "^4.6.0",
-    "umzug": "^2.0.0"
+    "knex": "^0.14.5",
+    "sqlite3": "^4.0.0",
+    "standard": "^11.0.1",
+    "tape": "^4.9.0",
+    "umzug": "^2.1.0"
   },
   "peerDependencies": {
     "umzug": ">=2"

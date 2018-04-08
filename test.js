@@ -54,11 +54,11 @@ test('executed', function (t) {
 
     var storage = new Storage(storageOpts)
     storage.executed()
-    .then(function (migrations) {
-      t.ok(Array.isArray(migrations))
-      t.equal(migrations.length, 0)
-    })
-    .catch(t.notOk)
+      .then(function (migrations) {
+        t.ok(Array.isArray(migrations))
+        t.equal(migrations.length, 0)
+      })
+      .catch(t.notOk)
   })
 })
 
@@ -76,9 +76,9 @@ test('logMigration', function (t) {
 
     var storage = new Storage(storageOpts)
     storage.executed()
-    .then(logMigration(storage, '1-first'))
-    .then(t.ok)
-    .catch(t.notOk)
+      .then(logMigration(storage, '1-first'))
+      .then(t.ok)
+      .catch(t.notOk)
   })
 
   t.test('lists logged migrations using .executed', function (t) {
@@ -86,13 +86,13 @@ test('logMigration', function (t) {
 
     var storage = new Storage(storageOpts)
     storage.executed()
-    .then(logMigration(storage, '2-second'))
-    .then(function () {
-      return storage.executed().then(function (migrations) {
-        t.equal(migrations[migrations.length - 1], '2-second')
+      .then(logMigration(storage, '2-second'))
+      .then(function () {
+        return storage.executed().then(function (migrations) {
+          t.equal(migrations[migrations.length - 1], '2-second')
+        })
       })
-    })
-    .catch(t.notOk)
+      .catch(t.notOk)
   })
 
   t.test('respects the log order', function (t) {
@@ -100,15 +100,15 @@ test('logMigration', function (t) {
 
     var storage = new Storage(storageOpts)
     storage.executed()
-    .then(logMigration(storage, 'b'))
-    .then(logMigration(storage, 'a'))
-    .then(function () {
-      return storage.executed().then(function (migrations) {
-        t.equal(migrations[migrations.length - 2], 'b')
-        t.equal(migrations[migrations.length - 1], 'a')
+      .then(logMigration(storage, 'b'))
+      .then(logMigration(storage, 'a'))
+      .then(function () {
+        return storage.executed().then(function (migrations) {
+          t.equal(migrations[migrations.length - 2], 'b')
+          t.equal(migrations[migrations.length - 1], 'a')
+        })
       })
-    })
-    .catch(t.notOk)
+      .catch(t.notOk)
   })
 })
 
@@ -120,20 +120,20 @@ test('unlogMigration', function (t) {
 
     var storage = new Storage(storageOpts)
     storage.executed()
-    .then(logMigration(storage, 'unlogTest'))
-    .then(function () {
-      return storage.executed().then(function (migrations) {
-        t.equal(migrations[migrations.length - 1], 'unlogTest')
+      .then(logMigration(storage, 'unlogTest'))
+      .then(function () {
+        return storage.executed().then(function (migrations) {
+          t.equal(migrations[migrations.length - 1], 'unlogTest')
+        })
       })
-    })
-    .then(unlogMigration(storage, 'unlogTest'))
-    .then(function () {
-      return storage.executed().then(function (migrations) {
-        t.notEqual(migrations[migrations.length - 1], 'unlogTest')
-        t.notEqual(migrations[migrations.length - 2], 'unlogTest')
+      .then(unlogMigration(storage, 'unlogTest'))
+      .then(function () {
+        return storage.executed().then(function (migrations) {
+          t.notEqual(migrations[migrations.length - 1], 'unlogTest')
+          t.notEqual(migrations[migrations.length - 2], 'unlogTest')
+        })
       })
-    })
-    .catch(t.notOk)
+      .catch(t.notOk)
   })
 
   t.test('deletes only the unlogged migration', function (t) {
@@ -143,18 +143,18 @@ test('unlogMigration', function (t) {
     var totalMigrations = 0
 
     storage.executed()
-    .then(function (migrations) {
-      totalMigrations = migrations.length
-    })
-    .then(logMigration(storage, 'unlog-first'))
-    .then(logMigration(storage, 'unlog-second'))
-    .then(unlogMigration(storage, 'unlog-second'))
-    .then(storage.executed.bind(storage))
-    .then(function (migrations) {
-      t.equal(migrations.length, totalMigrations + 1)
-      t.equal(migrations[migrations.length - 1], 'unlog-first')
-    })
-    .catch(t.notOk)
+      .then(function (migrations) {
+        totalMigrations = migrations.length
+      })
+      .then(logMigration(storage, 'unlog-first'))
+      .then(logMigration(storage, 'unlog-second'))
+      .then(unlogMigration(storage, 'unlog-second'))
+      .then(storage.executed.bind(storage))
+      .then(function (migrations) {
+        t.equal(migrations.length, totalMigrations + 1)
+        t.equal(migrations[migrations.length - 1], 'unlog-first')
+      })
+      .catch(t.notOk)
   })
 })
 
@@ -164,29 +164,29 @@ test('history', function (t) {
 
   var storage = new Storage(opts)
   storage.logMigration('first')
-  .then(logMigration(storage, 'second'))
-  .then(logMigration(storage, 'third'))
-  .then(unlogMigration(storage, 'third'))
-  .then(logMigration(storage, 'fourth'))
+    .then(logMigration(storage, 'second'))
+    .then(logMigration(storage, 'third'))
+    .then(unlogMigration(storage, 'third'))
+    .then(logMigration(storage, 'fourth'))
 
-  .then(storage.history.bind(storage))
-  .then(function (history) {
-    t.ok(Array.isArray(history), 'history must be an array')
-    t.equals(history[0].name, 'first')
-    t.equals(history[0].type, 'up')
+    .then(storage.history.bind(storage))
+    .then(function (history) {
+      t.ok(Array.isArray(history), 'history must be an array')
+      t.equals(history[0].name, 'first')
+      t.equals(history[0].type, 'up')
 
-    t.equals(history[1].name, 'second')
-    t.equals(history[1].type, 'up')
+      t.equals(history[1].name, 'second')
+      t.equals(history[1].type, 'up')
 
-    t.equals(history[2].name, 'third')
-    t.equals(history[2].type, 'up')
+      t.equals(history[2].name, 'third')
+      t.equals(history[2].type, 'up')
 
-    t.equals(history[3].name, 'third')
-    t.equals(history[3].type, 'down')
+      t.equals(history[3].name, 'third')
+      t.equals(history[3].type, 'down')
 
-    t.equals(history[4].name, 'fourth')
-    t.equals(history[4].type, 'up')
-  })
+      t.equals(history[4].name, 'fourth')
+      t.equals(history[4].type, 'up')
+    })
 })
 
 function deleteDatabase () {

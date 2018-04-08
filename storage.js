@@ -74,24 +74,24 @@ function createMigrationTable (storage) {
 function ensureBackwardsCompatibility (storage) {
   return function () {
     return storage.knex('system')
-    .where('key', 'migration')
-    .first()
-    .then(function (row) {
-      if (!row) return []
-      return JSON.parse(row.value).migrations
-    })
-    .then(function (migrations) {
-      migrations = (migrations || []).map(function (m, i) {
-        var evt = createEvent(storage.context, 'up', m.title)
-        evt.time.setMilliseconds(i) // events get ordered by insert date
-        return evt
+      .where('key', 'migration')
+      .first()
+      .then(function (row) {
+        if (!row) return []
+        return JSON.parse(row.value).migrations
       })
-      return storage.knex(storage.tableName).insert(migrations).return(migrations)
-    })
-    .catch(function (err) {
-      if (tableDoesNotExist(err, 'system')) return []
-      throw err
-    })
+      .then(function (migrations) {
+        migrations = (migrations || []).map(function (m, i) {
+          var evt = createEvent(storage.context, 'up', m.title)
+          evt.time.setMilliseconds(i) // events get ordered by insert date
+          return evt
+        })
+        return storage.knex(storage.tableName).insert(migrations).return(migrations)
+      })
+      .catch(function (err) {
+        if (tableDoesNotExist(err, 'system')) return []
+        throw err
+      })
   }
 }
 
