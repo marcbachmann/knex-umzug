@@ -33,7 +33,7 @@ KnexStorage.prototype.history = function () {
     .where('context', self.context)
     .orderBy('time', 'asc')
     .catch(function (err) {
-      if (tableDoesNotExist(err, self.tableName)) return createMigrationTable(self)
+      if (tableDoesNotExist(err, self.tableName)) return createMigrationTable(self).then(() => [])
       throw err
     })
 }
