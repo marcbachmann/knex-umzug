@@ -65,34 +65,6 @@ function createMigrationTable (storage) {
       table.string('host')
       table.string('user')
     })
-    .then(ensureBackwardsCompatibility(storage))
-}
-
-// Sorry for that custom logic, it's needed for
-// a migration of our legacy migration table.
-// I'll remove that in one of the next minor releases
-function ensureBackwardsCompatibility (storage) {
-  return function () {
-    return storage.knex('system')
-      .where('key', 'migration')
-      .first()
-      .then(function (row) {
-        if (!row) return []
-        return JSON.parse(row.value).migrations
-      })
-      .then(function (migrations) {
-        migrations = (migrations || []).map(function (m, i) {
-          var evt = createEvent(storage.context, 'up', m.title)
-          evt.time.setMilliseconds(i) // events get ordered by insert date
-          return evt
-        })
-        return storage.knex(storage.tableName).insert(migrations).return(migrations)
-      })
-      .catch(function (err) {
-        if (tableDoesNotExist(err, 'system')) return []
-        throw err
-      })
-  }
 }
 
 function toMigrationState (context) {
