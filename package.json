@@ -20,7 +20,7 @@
     "knex": "^0.16.7",
     "sqlite3": "^4.0.2",
     "standard": "^11.0.1",
-    "tape": "^4.9.1",
+    "tape": "^5.0.0",
     "umzug": "^2.1.0"
   },
   "peerDependencies": {
