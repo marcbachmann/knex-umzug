@@ -7,15 +7,19 @@ clone:
 
 steps:
 - name: install
-  image: node:8-alpine
+  image: node:14-alpine
   commands: ["npm install"]
 
 - name: standard
-  image: node:8-alpine
+  image: node:14-alpine
   commands: ["npm run lint -s"]
 
-- name: test-node-8
-  image: node:8-alpine
+- name: test-node-12
+  image: node:12-alpine
+  commands: ["npm run test:ci -s"]
+
+- name: test-node-14
+  image: node:14-alpine
   commands: ["npm run test:ci -s"]
 
 - name: publish
@@ -27,6 +31,6 @@ steps:
       from_secret: NPM_TOKEN
 ---
 kind: signature
-hmac: fa253d3d5f3794b5c72da0ac2b4b4b6168e1ff1474a3ecb29c6b6b3a2f5a4413
+hmac: 7a0c7709bef7a66034e10a4752e662f9d5c00075a2583636013896b93f9eb64f
 
 ...
