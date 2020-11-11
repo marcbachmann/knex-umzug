@@ -21,21 +21,27 @@ KnexStorage.prototype.unlogMigration = function (migrationName) {
   return insertEvent(this, 'down', migrationName)
 }
 
-KnexStorage.prototype.executed = function () {
-  return this
-    .history()
-    .then(toMigrationState(this.context))
+KnexStorage.prototype.executed = async function () {
+  return toMigrationState(this.context, await this.history())
 }
 
-KnexStorage.prototype.history = function () {
-  var self = this
-  return self.knex(self.tableName)
-    .where('context', self.context)
-    .orderBy('time', 'asc')
-    .catch(function (err) {
-      if (tableDoesNotExist(err, self.tableName)) return createMigrationTable(self).then(() => [])
-      throw err
-    })
+KnexStorage.prototype.history = async function () {
+  try {
+    const events = await this.knex(this.tableName)
+      .where('context', this.context)
+      .orderBy('time', 'asc')
+
+    // Add the missing primary key for older setups
+    if (events.length && events[0].id === undefined) {
+      await this.knex.raw(`ALTER TABLE migrations ADD COLUMN id SERIAL PRIMARY KEY;`)
+    }
+
+    return events
+  } catch (err) {
+    if (!tableDoesNotExist(err, this.tableName)) throw err
+    await createMigrationTable(this)
+    return []
+  }
 }
 
 function insertEvent (storage, type, name) {
@@ -57,29 +63,28 @@ function createMigrationTable (storage) {
   return storage
     .knex
     .schema
-    .createTable(storage.tableName, function (table) {
-      table.dateTime('time')
-      table.string('context')
-      table.string('type')
-      table.string('name')
-      table.string('host')
-      table.string('user')
+    .createTable(storage.tableName, function (t) {
+      t.increments('id').primary()
+      t.dateTime('time')
+      t.string('context')
+      t.string('type')
+      t.string('name')
+      t.string('host')
+      t.string('user')
     })
 }
 
-function toMigrationState (context) {
-  return function (events) {
-    if (!events) events = []
+function toMigrationState (context, events) {
+  if (!events) events = []
 
-    function reducer (executed, event) {
-      if (event.context !== context) return
-      if (event.type === 'up') executed.push(event)
-      else if (event.type === 'down') executed = executed.filter(function (e) { return e.name !== event.name })
-      return executed
-    }
-
-    return events.reduce(reducer, []).map(function (e) { return e.name })
+  function reducer (executed, event) {
+    if (event.context !== context) return
+    if (event.type === 'up') executed.push(event)
+    else if (event.type === 'down') executed = executed.filter(function (e) { return e.name !== event.name })
+    return executed
   }
+
+  return events.reduce(reducer, []).map(function (e) { return e.name })
 }
 
 function tableDoesNotExist (err, table) {
