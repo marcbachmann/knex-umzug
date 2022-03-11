@@ -1,5 +1,5 @@
-var os = require('os')
-var assert = require('assert')
+const os = require('os')
+const assert = require('assert')
 function isString (s) { return typeof s === 'string' }
 
 module.exports = KnexStorage
@@ -13,12 +13,16 @@ function KnexStorage (options) {
   assert(this.knex, "The option 'options.connection' is required.")
 }
 
-KnexStorage.prototype.logMigration = function (migrationName) {
-  return insertEvent(this, 'up', migrationName)
+KnexStorage.prototype.logMigration = async function (opts) {
+  const name = typeof opts === 'object' ? opts.name : opts
+  assert(typeof name === 'string', `The parameter 'name' must be a string.`)
+  return insertEvent(this, 'up', name)
 }
 
-KnexStorage.prototype.unlogMigration = function (migrationName) {
-  return insertEvent(this, 'down', migrationName)
+KnexStorage.prototype.unlogMigration = async function (opts) {
+  const name = typeof opts === 'object' ? opts.name : opts
+  assert(typeof name === 'string', `The parameter 'name' must be a string.`)
+  return insertEvent(this, 'down', name)
 }
 
 KnexStorage.prototype.executed = async function () {
@@ -77,14 +81,14 @@ function createMigrationTable (storage) {
 function toMigrationState (context, events) {
   if (!events) events = []
 
-  function reducer (executed, event) {
-    if (event.context !== context) return
-    if (event.type === 'up') executed.push(event)
-    else if (event.type === 'down') executed = executed.filter(function (e) { return e.name !== event.name })
-    return executed
+  const state = new Set()
+  for (const event of events) {
+    if (event.context !== context) continue
+    if (event.type === 'up') state.add(event.name)
+    else state.delete(event.name)
   }
 
-  return events.reduce(reducer, []).map(function (e) { return e.name })
+  return Array.from(state)
 }
 
 function tableDoesNotExist (err, table) {
