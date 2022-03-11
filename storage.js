@@ -15,13 +15,13 @@ function KnexStorage (options) {
 
 KnexStorage.prototype.logMigration = async function (opts) {
   const name = typeof opts === 'object' ? opts.name : opts
-  assert(typeof name === 'string', `The parameter 'name' must be a string.`)
+  assert(typeof name === 'string', 'The parameter \'name\' must be a string.')
   return insertEvent(this, 'up', name)
 }
 
 KnexStorage.prototype.unlogMigration = async function (opts) {
   const name = typeof opts === 'object' ? opts.name : opts
-  assert(typeof name === 'string', `The parameter 'name' must be a string.`)
+  assert(typeof name === 'string', 'The parameter \'name\' must be a string.')
   return insertEvent(this, 'down', name)
 }
 
@@ -37,7 +37,7 @@ KnexStorage.prototype.history = async function () {
 
     // Add the missing primary key for older setups
     if (events.length && events[0].id === undefined) {
-      await this.knex.raw(`ALTER TABLE migrations ADD COLUMN id SERIAL PRIMARY KEY;`)
+      await this.knex.raw('ALTER TABLE migrations ADD COLUMN id SERIAL PRIMARY KEY;')
     }
 
     return events
