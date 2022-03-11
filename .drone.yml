@@ -1,4 +1,5 @@
 ---
+type: docker
 kind: pipeline
 name: default
 
@@ -7,19 +8,19 @@ clone:
 
 steps:
 - name: install
-  image: node:14-alpine
+  image: node:14
   commands: ["npm install"]
 
 - name: standard
-  image: node:14-alpine
+  image: node:14
   commands: ["npm run lint -s"]
 
-- name: test-node-12
-  image: node:12-alpine
+- name: test-node-14
+  image: node:14
   commands: ["npm run test:ci -s"]
 
-- name: test-node-14
-  image: node:14-alpine
+- name: test-node-16
+  image: node:16
   commands: ["npm run test:ci -s"]
 
 - name: publish
@@ -31,6 +32,6 @@ steps:
       from_secret: NPM_TOKEN
 ---
 kind: signature
-hmac: 7a0c7709bef7a66034e10a4752e662f9d5c00075a2583636013896b93f9eb64f
+hmac: 5585a3ecd5f35ecd04edf44d181e77d271400608a52d1f7284c8a4af598fc6b4
 
 ...
