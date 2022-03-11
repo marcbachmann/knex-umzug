@@ -21,10 +21,10 @@
     "sqlite3": "^5.0.0",
     "standard": "^11.0.1",
     "tape": "^5.0.1",
-    "umzug": "^2.3.0"
+    "umzug": "^3.0.0"
   },
   "peerDependencies": {
-    "umzug": "^2.3.0"
+    "umzug": "^2.0.0 || ^3.0.0"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,5 @@
   "bugs": {
     "url": "https://github.com/marcbachmann/knex-umzug/issues"
   },
-  "homepage": "https://github.com/marcbachmann/knex-umzug#readme",
-  "dependencies": {}
+  "homepage": "https://github.com/marcbachmann/knex-umzug#readme"
 }

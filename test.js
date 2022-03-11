@@ -63,7 +63,7 @@ test('executed', function (t) {
 })
 
 test('logMigration', function (t) {
-  t.plan(4)
+  t.plan(6)
 
   t.test('is a function', function (t) {
     t.plan(1)
@@ -71,12 +71,32 @@ test('logMigration', function (t) {
     t.equal(typeof storage.logMigration, 'function')
   })
 
-  t.test('accepts the logMigration call', function (t) {
+  t.test('throws on invalid parameter', function (t) {
+    t.plan(1)
+
+    var storage = new Storage(storageOpts)
+    storage.executed()
+      .then(logMigration(storage, {foo: '1-first'}))
+      .then(t.notOk)
+      .catch(t.ok)
+  })
+
+  t.test('accepts the legacy logMigration call', function (t) {
     t.plan(1)
 
     var storage = new Storage(storageOpts)
     storage.executed()
       .then(logMigration(storage, '1-first'))
+      .then(t.ok)
+      .catch(t.notOk)
+  })
+
+  t.test('accepts the logMigration call', function (t) {
+    t.plan(1)
+
+    var storage = new Storage(storageOpts)
+    storage.executed()
+      .then(logMigration(storage, {name: '1-first'}))
       .then(t.ok)
       .catch(t.notOk)
   })
@@ -120,13 +140,13 @@ test('unlogMigration', function (t) {
 
     var storage = new Storage(storageOpts)
     storage.executed()
-      .then(logMigration(storage, 'unlogTest'))
+      .then(logMigration(storage, {name: 'unlogTest'}))
       .then(function () {
         return storage.executed().then(function (migrations) {
           t.equal(migrations[migrations.length - 1], 'unlogTest')
         })
       })
-      .then(unlogMigration(storage, 'unlogTest'))
+      .then(unlogMigration(storage, {name: 'unlogTest'}))
       .then(function () {
         return storage.executed().then(function (migrations) {
           t.notEqual(migrations[migrations.length - 1], 'unlogTest')
@@ -146,9 +166,9 @@ test('unlogMigration', function (t) {
       .then(function (migrations) {
         totalMigrations = migrations.length
       })
-      .then(logMigration(storage, 'unlog-first'))
-      .then(logMigration(storage, 'unlog-second'))
-      .then(unlogMigration(storage, 'unlog-second'))
+      .then(logMigration(storage, {name: 'unlog-first'}))
+      .then(logMigration(storage, {name: 'unlog-second'}))
+      .then(unlogMigration(storage, {name: 'unlog-second'}))
       .then(storage.executed.bind(storage))
       .then(function (migrations) {
         t.equal(migrations.length, totalMigrations + 1)
@@ -163,11 +183,11 @@ test('history', function (t) {
   const opts = Object.assign({}, storageOpts, {context: 'history-test'})
 
   var storage = new Storage(opts)
-  storage.logMigration('first')
-    .then(logMigration(storage, 'second'))
-    .then(logMigration(storage, 'third'))
-    .then(unlogMigration(storage, 'third'))
-    .then(logMigration(storage, 'fourth'))
+  storage.logMigration({name: 'first'})
+    .then(logMigration(storage, {name: 'second'}))
+    .then(logMigration(storage, {name: 'third'}))
+    .then(unlogMigration(storage, {name: 'third'}))
+    .then(logMigration(storage, {name: 'fourth'}))
 
     .then(storage.history.bind(storage))
     .then(function (history) {
@@ -195,14 +215,14 @@ function deleteDatabase () {
   } catch (err) {}
 }
 
-function logMigration (storage, name) {
+function logMigration (storage, opts) {
   return function () {
-    return storage.logMigration(name)
+    return storage.logMigration(opts)
   }
 }
 
-function unlogMigration (storage, name) {
+function unlogMigration (storage, opts) {
   return function () {
-    return storage.unlogMigration(name)
+    return storage.unlogMigration(opts)
   }
 }
