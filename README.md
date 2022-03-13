@@ -8,29 +8,56 @@ It supports namespacing and custom database table names.
 This storage adapter not only shows you the current state of a migration but also shows all the migration paths and tracks hostname and system user which executed a migration.
 
 This library only makes `knex` work with `umzug`.
-If you're interested in a CLI, please check out https://github.com/marcbachmann/umzug-cli.
+Please check out the umzug api for more details: https://www.npmjs.com/package/umzug#api
 
-
+Umzug v3:
 ```js
-var Umzug = require('umzug')
-var db = require('knex')({
+const {Umzug} = require('umzug')
+const knex = require('knex')
+const KnexUmzug = require('knex-umzug')
+
+const db = require('knex')({
+  client: 'sqlite3',
+  connection: {filename: './db.sql'}
+})
+
+const umzug = new Umzug({
+  storage: new KnexUmzug({
+    // The context allows you to reuse the same migrations table
+    // to maintain the state for multiple isolated migration setups.
+    // e.g. 'upstream', 'downstream'
+    context: 'default',
+    connection: db,
+    tableName: 'migrations'
+  })
+})
+
+umzug.up().then(function (result) {
+
+})
+```
+
+Umzug v2:
+```js
+const Umzug = require('umzug')
+const db = require('knex')({
     client: 'sqlite3',
     connection: {filename: './db.sql'}
 })
 
-var umzug = new Umzug({
+const umzug = new Umzug({
     storage: 'knex-umzug',
     storageOptions: {
+      // The context allows you to reuse the same migrations table
+      // to maintain the state for multiple isolated migration setups.
+      // e.g. 'upstream', 'downstream'
       context: 'default',
       connection: db,
       tableName: 'migrations'
     }
 })
 
-umzug.someMethod().then(function (result) {
+umzug.up().then(function (result) {
 
 })
 ```
-
-Please check out the umzug api: https://www.npmjs.com/package/umzug#api
-A cli that adds additional functionality will follow soon.
