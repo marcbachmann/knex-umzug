@@ -37,7 +37,7 @@ KnexStorage.prototype.history = async function () {
 
     // Add the missing primary key for older setups
     if (events.length && events[0].id === undefined) {
-      await this.knex.raw('ALTER TABLE migrations ADD COLUMN id SERIAL PRIMARY KEY;')
+      await this.knex.raw(`ALTER TABLE ${this.tableName} ADD COLUMN id SERIAL PRIMARY KEY;`)
     }
 
     return events
